@@ -40,6 +40,7 @@ void Application::Display(void)
 	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), ToMatrix4(m_qArcBall));
 	m_pMesh1->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(),));
 	*/
+	//Code to bounce the object between the left and right side of the screen
 	if (movingRight && offSet < 2.0f)
 	{
 		offSet += 0.1f;
@@ -57,6 +58,7 @@ void Application::Display(void)
 		movingRight = true;
 	}
 
+	//Loop that translates the cubes in their correct order
 	for ( int i = 0; i < 46; i++)
 	{
 #pragma region Unholy code i'm sorry

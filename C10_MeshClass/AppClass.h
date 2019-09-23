@@ -15,8 +15,8 @@ Date: 2017/05
 class Application
 {
 	std::vector<MyMesh*> collection;
-	float offSet;
-	bool movingRight;
+	float offSet;	//Offset to move the cubes
+	bool movingRight;	//boolean for which direction to move
 
 	MyMesh* m_pMesh = nullptr;
 	MyMesh* m_pMesh1 = nullptr;
