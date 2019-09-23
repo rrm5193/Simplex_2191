@@ -276,7 +276,21 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	float innerAngle = 2 * PI / a_nSubdivisions;
+
+	vector3 PointA = vector3(0, 0, 0);
+	vector3 PointB = vector3(a_fRadius, 0, 0);
+	vector3 PointC;
+	vector3 PointD = vector3(0, 0, a_fHeight);
+
+
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		PointC = vector3(a_fRadius * cos(innerAngle * (i + 1)), a_fRadius * sin(innerAngle * (i + 1)), 0);
+		AddTri(PointA, PointC, PointB);
+		AddTri(PointB, PointC, PointD);
+		PointB = PointC;
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -300,7 +314,26 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	float innerAngle = 2 * PI / a_nSubdivisions;
+	//Bottom Cap Points
+	vector3 PointA = vector3(0, 0, 0);
+	vector3 PointB = vector3(a_fRadius, 0, 0);
+	vector3 PointC;
+	//Top Cap Points
+	vector3 PointD = vector3(0, 0, a_fHeight);
+	vector3 PointE = vector3(a_fRadius, 0, a_fHeight);
+	vector3 PointF;
+
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		PointC = vector3(a_fRadius * cos(innerAngle * (i + 1)), a_fRadius * sin(innerAngle * (i + 1)), 0);
+		PointF = vector3(a_fRadius * cos(innerAngle * (i + 1)), a_fRadius * sin(innerAngle * (i + 1)), a_fHeight);
+		AddTri(PointA, PointC, PointB);	//Bottom Cap
+		AddTri(PointD, PointE, PointF);	//Top Cap
+		AddQuad(PointB,PointC,PointE,PointF);	//Walls
+		PointB = PointC;
+		PointE = PointF;
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -330,7 +363,39 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	float innerAngle = 2 * PI / a_nSubdivisions;
+
+	//Outer Points
+	vector3 PointA = vector3(a_fOuterRadius, 0, 0);
+	vector3 PointB;
+	vector3 PointC = vector3(a_fOuterRadius, 0, a_fHeight);
+	vector3 PointD;
+
+	//Inner Points
+	vector3 PointE = vector3(a_fInnerRadius, 0, 0);
+	vector3 PointF;
+	vector3 PointG = vector3(a_fInnerRadius, 0, a_fHeight);
+	vector3 PointH;
+
+	for (size_t i = 0; i < a_nSubdivisions; i++)
+	{
+		PointB = vector3(a_fOuterRadius * cos(innerAngle * (i + 1)), a_fOuterRadius * sin(innerAngle * (i + 1)), 0);
+		PointD = vector3(a_fOuterRadius * cos(innerAngle * (i + 1)), a_fOuterRadius * sin(innerAngle * (i + 1)), a_fHeight);
+		PointF = vector3(a_fInnerRadius * cos(innerAngle * (i + 1)), a_fInnerRadius * sin(innerAngle * (i + 1)), 0);
+		PointH = vector3(a_fInnerRadius * cos(innerAngle * (i + 1)), a_fInnerRadius * sin(innerAngle * (i + 1)), a_fHeight);
+		//Outerwall
+		AddQuad(PointA, PointB, PointC, PointD);
+		//InnerWall
+		AddQuad(PointE,PointG,PointF,PointH);
+		//Top Cap
+		AddQuad(PointC, PointD, PointG, PointH);
+		//Bottom Cap
+		AddQuad(PointA,PointE,PointB,PointF);
+		PointA = PointB;
+		PointC = PointD;
+		PointE = PointF;
+		PointG = PointH;
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -362,7 +427,25 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	float innerAngle = 2 * PI / a_nSubdivisionsB;
+	float outerAngle = 2 * PI / a_nSubdivisionsA; 
+	float center =  ((a_fOuterRadius - a_fInnerRadius) / 2);
+
+	vector3 ringCenter = vector3(innerAngle + center,0,0);
+	vector3 ringCenter2;
+	vector3 PointA = vector3(a_fOuterRadius, 0, 0);
+	vector3 PointB;
+	
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		ringCenter2 = vector3((a_fInnerRadius + center) * cos(outerAngle * (i + 1)), 0, (a_fInnerRadius + center) * sin(outerAngle * (i + 1)));
+		AddTri(vector3(0,0,0), ringCenter, ringCenter2);
+		for (int j = 0; j < a_nSubdivisionsB; j++)
+		{
+
+		}
+		ringCenter = ringCenter2;
+	}
 	// -------------------------------
 
 	// Adding information about color
