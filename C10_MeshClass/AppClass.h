@@ -14,10 +14,14 @@ Date: 2017/05
 
 class Application
 {
+	std::vector<MyMesh*> collection;
+	float offSet;
+	bool movingRight;
+
 	MyMesh* m_pMesh = nullptr;
 	MyMesh* m_pMesh1 = nullptr;
 
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu | Ryan Montero - rrm5193@g.rit.edu";
 private:
 	static ImGuiObject gui; //GUI object
 

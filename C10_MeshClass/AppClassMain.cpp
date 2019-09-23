@@ -152,7 +152,7 @@ void Application::Run(void)
 		Update();
 		Display();
 	}
-
+	
 	//Write configuration of this program
 	WriteConfig();
 }
