@@ -427,24 +427,70 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
-	float innerAngle = 2 * PI / a_nSubdivisionsB;
-	float outerAngle = 2 * PI / a_nSubdivisionsA; 
-	float center =  ((a_fOuterRadius - a_fInnerRadius) / 2);
+	float thetaAngle;	//latitude
+	float phiAngle;		//longitude
 
-	vector3 ringCenter = vector3(innerAngle + center,0,0);
-	vector3 ringCenter2;
-	vector3 PointA = vector3(a_fOuterRadius, 0, 0);
+	float x, y, z, xy;
+
+	//A---B
+	//|   |
+	//|   |
+	//C---D
+
+	vector3 PointA;
 	vector3 PointB;
-	
+	vector3 PointC;
+	vector3 PointD;
+
+
 	for (int i = 0; i < a_nSubdivisionsA; i++)
 	{
-		ringCenter2 = vector3((a_fInnerRadius + center) * cos(outerAngle * (i + 1)), 0, (a_fInnerRadius + center) * sin(outerAngle * (i + 1)));
-		AddTri(vector3(0,0,0), ringCenter, ringCenter2);
+		thetaAngle = PI / 2 - PI * i / a_nSubdivisionsA;
+		xy = (a_fOuterRadius+a_fInnerRadius) * cos(thetaAngle);
+		z = sin(thetaAngle) * a_fInnerRadius;
+
 		for (int j = 0; j < a_nSubdivisionsB; j++)
 		{
+			//Calculations for point A
+			phiAngle = 2 * PI * j / a_nSubdivisionsB;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
 
+			PointA = vector3(x, y, z);
+
+			//Calculations for point B
+			phiAngle = 2 * PI * (j + 1) / a_nSubdivisionsB;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
+
+			PointB = vector3(x, y, z);
+
+			//Calculations for point C
+			thetaAngle = PI / 2 - PI * (i + 1) / a_nSubdivisionsA;
+			xy = (a_fOuterRadius + a_fInnerRadius) * cos(thetaAngle);
+			z = sin(thetaAngle) * a_fInnerRadius;
+
+			phiAngle = 2 * PI * j / a_nSubdivisionsB;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
+
+			PointC = vector3(x, y, z);
+
+			//Calculations for point D
+			phiAngle = 2 * PI * (j + 1) / a_nSubdivisionsB;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
+
+			PointD = vector3(x, y, z);
+
+			//Create Quads for the sphere
+			AddQuad(PointC, PointD, PointA, PointB);
+
+			//Reset the theta angle and floats z and xy
+			thetaAngle = PI / 2 - PI * i / a_nSubdivisionsA;
+			xy = (a_fOuterRadius + a_fInnerRadius) * cos(thetaAngle);
+			z = sin(thetaAngle) * a_fInnerRadius;
 		}
-		ringCenter = ringCenter2;
 	}
 	// -------------------------------
 
@@ -463,14 +509,78 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		GenerateCube(a_fRadius * 2.0f, a_v3Color);
 		return;
 	}
-	if (a_nSubdivisions > 6)
-		a_nSubdivisions = 6;
+	//if (a_nSubdivisions > 6)
+	//	a_nSubdivisions = 6;
 
 	Release();
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	float thetaAngle;	//latitude
+	float phiAngle;		//longitude
+
+	float x, y, z, xy;
+	
+	//A---B
+	//|   |
+	//|   |
+	//C---D
+
+	vector3 PointA;
+	vector3 PointB;
+	vector3 PointC;
+	vector3 PointD;
+
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		thetaAngle = PI / 2 - PI * i / a_nSubdivisions;
+		xy = a_fRadius * cos(thetaAngle);
+		z = sin(thetaAngle) * a_fRadius;
+
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			//Calculations for point A
+			phiAngle = 2 * PI * j / a_nSubdivisions;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
+
+			PointA = vector3(x,y,z);
+
+			//Calculations for point B
+			phiAngle = 2 * PI * (j+1) / a_nSubdivisions;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
+
+			PointB = vector3(x, y, z);
+
+			//Calculations for point C
+			thetaAngle = PI / 2 - PI * (i+1) / a_nSubdivisions;
+			xy = a_fRadius * cos(thetaAngle);
+			z = sin(thetaAngle) * a_fRadius;
+
+			phiAngle = 2 * PI * j / a_nSubdivisions;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
+
+			PointC = vector3(x, y, z);
+
+			//Calculations for point D
+			phiAngle = 2 * PI * (j + 1) / a_nSubdivisions;
+			x = xy * cos(phiAngle);
+			y = xy * sin(phiAngle);
+
+			PointD = vector3(x, y, z);
+
+			//Create Quads for the sphere
+			AddQuad(PointC,PointD,PointA,PointB);
+
+			//Reset the theta angle and floats z and xy
+			thetaAngle = PI / 2 - PI * i / a_nSubdivisions;
+			xy = a_fRadius * cos(thetaAngle);
+			z = sin(thetaAngle) * a_fRadius;
+		}
+	}
 	// -------------------------------
 
 	// Adding information about color

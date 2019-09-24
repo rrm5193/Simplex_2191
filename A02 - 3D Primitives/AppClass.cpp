@@ -40,7 +40,7 @@ void Application::InitVariables(void)
 		m_pMesh->GenerateTube(1.0f, 0.7f, 1.0f, 10, C_CYAN);
 		break;
 	case 4:
-		m_pMesh->GenerateSphere(1.0f, 5, C_CYAN);
+		m_pMesh->GenerateSphere(1.0f, 18, C_CYAN);
 		break;
 	case 5:
 		m_pMesh->GenerateTorus(1.0f, 0.6f, 10, 10, C_CYAN);
