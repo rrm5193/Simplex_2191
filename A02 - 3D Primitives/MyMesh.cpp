@@ -427,70 +427,46 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
-	float thetaAngle;	//latitude
-	float phiAngle;		//longitude
+	float thetaAngle = 2 * PI / a_nSubdivisionsA;
+	float phiAngle = 2 * PI / a_nSubdivisionsB;
+	float tubeRadius = (a_fOuterRadius - a_fInnerRadius) / 2;
 
-	float x, y, z, xy;
-
-	//A---B
-	//|   |
-	//|   |
-	//C---D
+	float x, y, z = 0;
 
 	vector3 PointA;
 	vector3 PointB;
 	vector3 PointC;
 	vector3 PointD;
 
-
 	for (int i = 0; i < a_nSubdivisionsA; i++)
 	{
-		thetaAngle = PI / 2 - PI * i / a_nSubdivisionsA;
-		xy = (a_fOuterRadius+a_fInnerRadius) * cos(thetaAngle);
-		z = sin(thetaAngle) * a_fInnerRadius;
-
 		for (int j = 0; j < a_nSubdivisionsB; j++)
 		{
-			//Calculations for point A
-			phiAngle = 2 * PI * j / a_nSubdivisionsB;
-			x = xy * cos(phiAngle);
-			y = xy * sin(phiAngle);
 
-			PointA = vector3(x, y, z);
+			y = tubeRadius * sin( j * phiAngle);
+			x = (cos(i*thetaAngle) * (a_fInnerRadius +tubeRadius));
+			//z = (tubeRadius * sin(j * phiAngle)) + (sin(i * thetaAngle) * (a_fInnerRadius + tubeRadius));
+			PointA = vector3(x,y,z);
 
-			//Calculations for point B
-			phiAngle = 2 * PI * (j + 1) / a_nSubdivisionsB;
-			x = xy * cos(phiAngle);
-			y = xy * sin(phiAngle);
-
+			y = tubeRadius * sin(j * phiAngle);
+			x = ((cos(i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
+			//z = (tubeRadius * sin(j * phiAngle)) + (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
 			PointB = vector3(x, y, z);
 
-			//Calculations for point C
-			thetaAngle = PI / 2 - PI * (i + 1) / a_nSubdivisionsA;
-			xy = (a_fOuterRadius + a_fInnerRadius) * cos(thetaAngle);
-			z = sin(thetaAngle) * a_fInnerRadius;
-
-			phiAngle = 2 * PI * j / a_nSubdivisionsB;
-			x = xy * cos(phiAngle);
-			y = xy * sin(phiAngle);
-
+			y = tubeRadius * sin((j + 1) * phiAngle);
+			x = (cos(i * thetaAngle) * (a_fInnerRadius + tubeRadius));
+			//z = (tubeRadius * sin((j + 1) * phiAngle)) + (sin(i * thetaAngle) * a_fInnerRadius);
 			PointC = vector3(x, y, z);
 
-			//Calculations for point D
-			phiAngle = 2 * PI * (j + 1) / a_nSubdivisionsB;
-			x = xy * cos(phiAngle);
-			y = xy * sin(phiAngle);
-
+			y = tubeRadius * sin((j + 1) * phiAngle);
+			x = (cos((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
+		//	z = (tubeRadius * sin((j + 1) * phiAngle)) + (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
 			PointD = vector3(x, y, z);
-
-			//Create Quads for the sphere
-			AddQuad(PointC, PointD, PointA, PointB);
-
-			//Reset the theta angle and floats z and xy
-			thetaAngle = PI / 2 - PI * i / a_nSubdivisionsA;
-			xy = (a_fOuterRadius + a_fInnerRadius) * cos(thetaAngle);
-			z = sin(thetaAngle) * a_fInnerRadius;
+		
+			AddQuad(PointD, PointB, PointC, PointA);
 		}
+		
+		
 	}
 	// -------------------------------
 
@@ -518,7 +494,7 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	// Replace this with your code
 	float thetaAngle;	//latitude
 	float phiAngle;		//longitude
-
+	
 	float x, y, z, xy;
 	
 	//A---B
