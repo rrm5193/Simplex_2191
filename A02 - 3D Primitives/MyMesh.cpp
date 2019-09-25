@@ -427,12 +427,18 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
+	//angles for sphereical coordinate calculations
 	float thetaAngle = 2 * PI / a_nSubdivisionsA;
 	float phiAngle = 2 * PI / a_nSubdivisionsB;
+
+	//Radius of the ring
 	float tubeRadius = (a_fOuterRadius - a_fInnerRadius) / 2;
 	a_fInnerRadius += tubeRadius;
+	
+	//Coordinate values to calculate
 	float x, y, z = 0;
 
+	//Points on the torus to form the quads
 	vector3 PointA;
 	vector3 PointB;
 	vector3 PointC;
@@ -442,27 +448,31 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	{
 		for (int j = 0; j < a_nSubdivisionsB; j++)
 		{
-
+			//Point A
 			y = (sin(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * j)));
 			x = (cos(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle*j)));
 			z = tubeRadius * sin(phiAngle * j);
 			PointA = vector3(x,y,z);
 
+			//Point B
 			y = (sin(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
 			x = (cos(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
 			z = tubeRadius * sin(phiAngle * (j + 1));
 			PointB = vector3(x, y, z);
 
+			//Point C
 			y = (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * j)));
 			x = (cos((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * j)));
 			z = tubeRadius * sin(phiAngle * j);
 			PointC = vector3(x, y, z);
 
+			//Point D
 			y = (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
 			x = (cos((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
 			z = tubeRadius * sin(phiAngle * (j + 1));
 			PointD = vector3(x, y, z);
 		
+			//Walls of the torus
 			AddQuad(PointA, PointC, PointB, PointD);
 		}
 		
