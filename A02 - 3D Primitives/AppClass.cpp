@@ -43,7 +43,7 @@ void Application::InitVariables(void)
 		m_pMesh->GenerateSphere(1.0f, 18, C_CYAN);
 		break;
 	case 5:
-		m_pMesh->GenerateTorus(1.0f, 0.6f, 10, 10, C_CYAN);
+		m_pMesh->GenerateTorus(2.0f, 1.6f, 10, 10, C_CYAN);
 		break;
 	}
 }

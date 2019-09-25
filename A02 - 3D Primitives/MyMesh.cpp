@@ -430,7 +430,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	float thetaAngle = 2 * PI / a_nSubdivisionsA;
 	float phiAngle = 2 * PI / a_nSubdivisionsB;
 	float tubeRadius = (a_fOuterRadius - a_fInnerRadius) / 2;
-
+	a_fInnerRadius += tubeRadius;
 	float x, y, z = 0;
 
 	vector3 PointA;
@@ -443,27 +443,27 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 		for (int j = 0; j < a_nSubdivisionsB; j++)
 		{
 
-			y = tubeRadius * sin( j * phiAngle);
-			x = (cos(i*thetaAngle) * (a_fInnerRadius +tubeRadius));
-			//z = (tubeRadius * sin(j * phiAngle)) + (sin(i * thetaAngle) * (a_fInnerRadius + tubeRadius));
+			y = (sin(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * j)));
+			x = (cos(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle*j)));
+			z = tubeRadius * sin(phiAngle * j);
 			PointA = vector3(x,y,z);
 
-			y = tubeRadius * sin(j * phiAngle);
-			x = ((cos(i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
-			//z = (tubeRadius * sin(j * phiAngle)) + (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
+			y = (sin(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
+			x = (cos(i * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
+			z = tubeRadius * sin(phiAngle * (j + 1));
 			PointB = vector3(x, y, z);
 
-			y = tubeRadius * sin((j + 1) * phiAngle);
-			x = (cos(i * thetaAngle) * (a_fInnerRadius + tubeRadius));
-			//z = (tubeRadius * sin((j + 1) * phiAngle)) + (sin(i * thetaAngle) * a_fInnerRadius);
+			y = (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * j)));
+			x = (cos((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * j)));
+			z = tubeRadius * sin(phiAngle * j);
 			PointC = vector3(x, y, z);
 
-			y = tubeRadius * sin((j + 1) * phiAngle);
-			x = (cos((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
-		//	z = (tubeRadius * sin((j + 1) * phiAngle)) + (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius));
+			y = (sin((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
+			x = (cos((i + 1) * thetaAngle) * (a_fInnerRadius + tubeRadius * cos(phiAngle * (j + 1))));
+			z = tubeRadius * sin(phiAngle * (j + 1));
 			PointD = vector3(x, y, z);
 		
-			AddQuad(PointD, PointB, PointC, PointA);
+			AddQuad(PointA, PointC, PointB, PointD);
 		}
 		
 		
