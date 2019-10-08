@@ -152,12 +152,16 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 
 void MyCamera::MoveForward(float a_fDistance)
 {
+	//The forward vector of the camera
 	vector3 forward = m_v3Target - m_v3Position;
+	//Frward vector normalized and multiplied by the distance
 	forward /= forward.length();
 	forward *= a_fDistance;
+	//Update the position target and up vector of the camera by the forward vector
 	m_v3Position += forward;
 	m_v3Target += forward;
 	m_v3Above += forward;
+
 	//The following is just an example and does not take in account the forward vector (AKA view vector)
 	//m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
 	//m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
@@ -166,5 +170,19 @@ void MyCamera::MoveForward(float a_fDistance)
 
 void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
 void MyCamera::MoveSideways(float a_fDistance){
-	
+	//The forward vector of the camera
+	vector3 forward = m_v3Target - m_v3Position;
+	//Frward vector normalized and multiplied by the distance
+	forward /= forward.length();
+	//Get the up vector
+	vector3 up = m_v3Above / m_v3Above.length();
+	//Get the right vector from the cross product of the forward and up vectors
+	vector3 right = vector3(((forward.y * up.z)-(forward.z*up.y)), ((forward.z*up.x) - (forward.x*up.z)), ((forward.x*up.y) - (forward.y*up.x)));
+	right /= right.length();
+	right *= a_fDistance;
+
+	//Update the position target and up vector of the camera by the forward vector
+	m_v3Position += right;
+	m_v3Target += right;
+	m_v3Above += right;
 }//Needs to be defined
