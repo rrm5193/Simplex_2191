@@ -163,22 +163,22 @@ void MyCamera::MoveForward(float a_fDistance)
 	m_v3Target += forward;
 	m_v3Above += forward;
 
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	//m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	//m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	//m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
 }
 
 void MyCamera::MoveVertical(float a_fDistance){
+	//recalculate forward and right vector
 	forward = glm::normalize(m_v3Position - m_v3Target);
 	right = glm::normalize(glm::cross(AXIS_Y, forward));
+
+	//get up vector from the cross product of right and forward
 	vector3 up = glm::normalize(glm::cross(forward,right)) * a_fDistance;
 
+	//update the camera by the up vector
 	m_v3Position += up;
 	m_v3Target += up;
 	m_v3Above += up;
 
-}//Needs to be defined
+}
 
 void MyCamera::MoveSideways(float a_fDistance){
 	//The forward vector of the camera
@@ -191,20 +191,36 @@ void MyCamera::MoveSideways(float a_fDistance){
 	m_v3Position += right;
 	m_v3Target += right;
 	m_v3Above += right;
-}//Needs to be defined
+}
 
 void MyCamera::changePitch(float fAngleY) {
+	
+	//recalculate forward and right vector
 	forward = glm::normalize(m_v3Position - m_v3Target);
 	right = glm::normalize(glm::cross(AXIS_Y, forward));
+	
+	//Calculate the rotation quaternion using the identity up vector 
 	quaternion rotationPitch = glm::angleAxis(fAngleY, AXIS_Y);
+	
+	//update the forward vector using the rotation quaternion and its conjugate
 	forward = rotationPitch * forward * glm::conjugate(rotationPitch);
+
+	//Update target
 	m_v3Target = m_v3Position + forward;
 }
 
 void MyCamera::changeYaw(float fAngleX) {
+	
+	//recalculate forward and right vector
 	forward = glm::normalize(m_v3Position - m_v3Target);
 	right = glm::normalize(glm::cross(AXIS_Y, forward));
+	
+	//Calculate the rotation quaternion using the right vector
 	quaternion rotationYaw = glm::angleAxis(fAngleX, right);
+	
+	//update the forward vector using the rotation quaternion and its conjugate
 	forward = rotationYaw * forward * glm::conjugate(rotationYaw);
+	
+	//Update target
 	m_v3Target = m_v3Position + forward;
 }

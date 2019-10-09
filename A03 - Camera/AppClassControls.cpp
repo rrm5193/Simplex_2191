@@ -369,9 +369,6 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
-	//glm::mat4 rotationMat = glm::mat4_cast(glm::angleAxis(fAngleY, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::angleAxis(fAngleX, glm::vec3(1.0f, 0.0f, 0.0f)));
-	//glm::vec3 target = glm::vec3(rotationMat * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f));
-	//target += m_pCamera->GetPosition();
 
 	m_pCamera->changePitch(fAngleY);
 	m_pCamera->changeYaw(fAngleX);
@@ -392,15 +389,17 @@ void Application::ProcessKeyboard(void)
 
 	if (fMultiplier)
 		fSpeed *= 5.0f;
-
+	//Forward & Backward Movement
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		m_pCamera->MoveForward(-fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(fSpeed);
+	//SideWays Movement
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		m_pCamera->MoveSideways(-fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		m_pCamera->MoveSideways(fSpeed);
+	//Vertical Movement
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		m_pCamera->MoveVertical(-fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
