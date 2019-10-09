@@ -370,15 +370,12 @@ void Application::CameraRotation(float a_fSpeed)
 	}
 	//Change the Yaw and the Pitch of the camera
 	
-	quaternion rotation = glm::angleAxis(glm::radians(fAngleY), vector3(0.0f, 1.0f, 0.0f));
-	rotation *= glm::angleAxis(glm::radians(fAngleX), vector3(-1.0f, 0.0f, 0.0f));
+	m_pCamera->rotation = glm::angleAxis(glm::radians(fAngleY), AXIS_Y) * m_pCamera->rotation * glm::angleAxis(glm::radians(fAngleX), AXIS_X);
 
-	vector3 target = rotation * m_pCamera->GetTarget();
-	vector3 up = rotation * m_pCamera->GetAbove();
+	vector3 target = m_pCamera->rotation * m_pCamera->GetTarget();
 
 	m_pCamera->SetTarget(target);
-	m_pCamera->SetAbove(up);
-
+	
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -389,7 +386,7 @@ void Application::ProcessKeyboard(void)
 	for discreet on/off use ProcessKeyboardPressed/Released
 	*/
 #pragma region Camera Position
-	float fSpeed = 0.5f;
+	float fSpeed = 0.1f;
 	float fMultiplier = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) ||
 		sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
 
