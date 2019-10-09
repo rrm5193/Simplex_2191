@@ -114,6 +114,9 @@ void Simplex::MyCamera::ResetCamera(void)
 	m_v2Horizontal = vector2(-5.0f, 5.0f); //Orthographic horizontal projection
 	m_v2Vertical = vector2(-5.0f, 5.0f); //Orthographic vertical projection
 
+	forward = glm::normalize(m_v3Position - m_v3Target);
+	right = glm::normalize(glm::cross(AXIS_Y, forward));
+
 	CalculateProjectionMatrix();
 	CalculateViewMatrix();
 }
@@ -153,7 +156,7 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 void MyCamera::MoveForward(float a_fDistance)
 {
 	//The forward vector of the camera times the distance to move
-	vector3 forward = glm::normalize(m_v3Position - m_v3Target) * a_fDistance;
+	forward = glm::normalize(m_v3Position - m_v3Target) * a_fDistance;
 
 	//Update the position target and up vector of the camera by the forward vector
 	m_v3Position += forward;
@@ -166,17 +169,42 @@ void MyCamera::MoveForward(float a_fDistance)
 	//m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
+void MyCamera::MoveVertical(float a_fDistance){
+	forward = glm::normalize(m_v3Position - m_v3Target);
+	right = glm::normalize(glm::cross(AXIS_Y, forward));
+	vector3 up = glm::normalize(glm::cross(forward,right)) * a_fDistance;
+
+	m_v3Position += up;
+	m_v3Target += up;
+	m_v3Above += up;
+
+}//Needs to be defined
 
 void MyCamera::MoveSideways(float a_fDistance){
 	//The forward vector of the camera
-	vector3 forward = glm::normalize(m_v3Position - m_v3Target);
+	forward = glm::normalize(m_v3Position - m_v3Target);
 	
 	//Get the right vector from the cross product of the forward and up vectors
-	vector3 right = glm::normalize(glm::cross(vector3(0.0f,1.0f,0.0f), forward)) * a_fDistance;
+	right = glm::normalize(glm::cross(vector3(0.0f,1.0f,0.0f), forward)) * a_fDistance;
 
 	//Update the position target of the camera by the forward vector
 	m_v3Position += right;
 	m_v3Target += right;
 	m_v3Above += right;
 }//Needs to be defined
+
+void MyCamera::changePitch(float fAngleY) {
+	forward = glm::normalize(m_v3Position - m_v3Target);
+	right = glm::normalize(glm::cross(AXIS_Y, forward));
+	quaternion rotationPitch = glm::angleAxis(fAngleY, AXIS_Y);
+	forward = rotationPitch * forward * glm::conjugate(rotationPitch);
+	m_v3Target = m_v3Position + forward;
+}
+
+void MyCamera::changeYaw(float fAngleX) {
+	forward = glm::normalize(m_v3Position - m_v3Target);
+	right = glm::normalize(glm::cross(AXIS_Y, forward));
+	quaternion rotationYaw = glm::angleAxis(fAngleX, right);
+	forward = rotationYaw * forward * glm::conjugate(rotationYaw);
+	m_v3Target = m_v3Position + forward;
+}
