@@ -227,31 +227,36 @@ void MyRigidBody::ClearCollidingList(void)
 bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 {
 	//check if spheres are colliding as pre-test
-	bool bColliding = (glm::distance(GetCenterGlobal(), a_pOther->GetCenterGlobal()) < m_fRadius + a_pOther->m_fRadius);
-	glm::vec3 position = abs(a_pOther->GetCenterGlobal() - GetCenterGlobal()) / 2;
+	bool bColliding = true;// (glm::distance(GetCenterGlobal(), a_pOther->GetCenterGlobal()) < m_fRadius + a_pOther->m_fRadius);
+	glm::vec3 position = ((a_pOther->GetCenterGlobal() - GetCenterGlobal()) / 2);
+	glm::vec3 color;
+	glm::vec3 orientation;
 	//if they are colliding check the SAT
 	if (bColliding)
 	{
 		int result = SAT(a_pOther);
 
-		if(result != eSATResults::SAT_NONE)
+		if (result != eSATResults::SAT_NONE) {
 			bColliding = false;// reset to false
-		
-
-		if (result >= 7 && result <= 9 )
-		{
-			m_pMeshMngr->AddPlaneToRenderList(glm::translate(m_m4ToWorld, position) * glm::scale(glm::vec3(3, 3, 3)) * glm::rotate(90.0f, vector3(1.0f, 0.0f, 0.0f)), C_BLUE);
-		}
-		else if (result >= 10 && result <= 12)
-		{
-			m_pMeshMngr->AddPlaneToRenderList(glm::translate(m_m4ToWorld, position) * glm::scale(glm::vec3(3, 3, 3)) * glm::rotate(90.0f, vector3(0.0f, 1.0f, 0.0f)), C_BLUE);
-		}
-		else if (result >= 13 && result <= 15)
-		{
-			
+			//BAsed on the result of result%3 you determine which axis has no collision
+			if (result%3 == 0)	//Z-Axis
+			{
+				color = C_BLUE;
+				orientation = vector3(0,0,1);
+			}
+			else if (result%3 == 1)	//X-Axis
+			{
+				color = C_RED;
+				orientation = vector3(0, 1, 0);
+			}
+			else					//Y-Axis
+			{
+				color = C_GREEN;
+				orientation = vector3(1, 0, 0);
+			}
 		}
 	}
-	m_pMeshMngr->AddPlaneToRenderList(glm::translate(m_m4ToWorld, position) * glm::scale(glm::vec3(3, 3, 3)) * glm::rotate(0.0f, vector3(1.0f, 0.0f, 0.0f)), C_BLUE);
+	
 
 	if (bColliding) //they are colliding
 	{
@@ -262,6 +267,9 @@ bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 	{
 		this->RemoveCollisionWith(a_pOther);
 		a_pOther->RemoveCollisionWith(this);
+		//Render the plane
+		m_pMeshMngr->AddPlaneToRenderList(glm::translate(m_m4ToWorld, position) * glm::scale(glm::vec3(5, 5, 5)) * glm::rotate((float)PI/2,orientation), color);
+		m_pMeshMngr->AddPlaneToRenderList(glm::translate(m_m4ToWorld, position) * glm::scale(glm::vec3(5, 5, 5)) * glm::rotate(3*(float)PI/2, orientation), color);
 	}
 
 	return bColliding;
@@ -330,13 +338,13 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	for (int i = 0; i < 3; i++) {
 		ra = m_v3HalfWidth[i];
 		rb = a_pOther->m_v3HalfWidth[0] * AbsR[i][0] + a_pOther->m_v3HalfWidth[1] * AbsR[i][1] + a_pOther->m_v3HalfWidth[2] * AbsR[i][2];
-		if (glm::abs(t[i]) > ra + rb) return 1;
+		if (glm::abs(t[i]) > ra + rb) return i+1;
 	}
 	// Test axes L = B0, L = B1, L = B2
 	for (int i = 0; i < 3; i++) {
 		ra = m_v3HalfWidth[0] * AbsR[0][i] + m_v3HalfWidth[1] * AbsR[1][i] + m_v3HalfWidth[2] * AbsR[2][i];
 		rb = a_pOther->m_v3HalfWidth[i];
-		if (glm::abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb) return 1;
+		if (glm::abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb) return i+1;
 	}
 	
 	// Test axis L = A0 x B0
