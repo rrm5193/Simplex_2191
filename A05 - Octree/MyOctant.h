@@ -1,5 +1,5 @@
-#ifndef __MYOctantCLASS_H_
-#define __MYOctantCLASS_H_
+#ifndef __MyOctantCLASS_H_
+#define __MyOctantCLASS_H_
 
 #include "MyEntityManager.h"
 
