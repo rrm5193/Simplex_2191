@@ -126,6 +126,7 @@ using namespace Simplex;
 		for (uint i = 0; i < 8; i++) {
 			m_pChild[i] = other.m_pChild[i];
 		}
+
 	}
 
 	MyOctant& Simplex::MyOctant::operator=(MyOctant const& other)
@@ -136,6 +137,7 @@ using namespace Simplex;
 			MyOctant temp(other);
 			Swap(temp);
 		}
+		return *this;
 	}
 
 	Simplex::MyOctant::~MyOctant(void){Release();}
