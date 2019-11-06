@@ -56,8 +56,15 @@ void Application::Display(void)
 	ClearScreen();
 
 	//display octree
-	m_pRoot->Display();
-	
+	if (m_uOctantID == -1)
+	{
+		m_pRoot->Display();
+	}
+	else
+	{
+		m_pRoot->Display(m_uOctantID);
+	}
+
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 	
@@ -75,6 +82,7 @@ void Application::Display(void)
 }
 void Application::Release(void)
 {
+	SafeDelete(m_pRoot);
 	//release GUI
 	ShutdownGUI();
 }
