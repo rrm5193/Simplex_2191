@@ -1,11 +1,14 @@
 #include "MyOctant.h"
 
 using namespace Simplex;
-	void Simplex::MyOctant::Init(void)
+
+uint MyOctant::m_uMyOctantCount = 0;
+uint MyOctant::m_uMaxLevel = 3;
+uint MyOctant::m_uIdealEntityCount = 5;
+
+	void MyOctant::Init(void)
 	{
-		m_uMyOctantCount = 0;
-		m_uMaxLevel = 3;
-		m_uIdealEntityCount = 5;
+		
 		m_uChildren = 0;
 		m_fSize = 0;
 		m_uID = m_uMyOctantCount;
@@ -25,7 +28,7 @@ using namespace Simplex;
 		}
 	}
 
-	void Simplex::MyOctant::Swap(MyOctant& other)
+	void MyOctant::Swap(MyOctant& other)
 	{
 		std::swap(m_uChildren, other.m_uChildren);
 
@@ -41,8 +44,8 @@ using namespace Simplex;
 		m_pMeshMngr = MeshManager::GetInstance();
 		m_pEntityMngr = MyEntityManager::GetInstance();
 
-		std::swap(m_fSize, other.m_fSize);
-		std::swap(m_fSize, other.m_fSize);
+		std::swap(m_uLevel, other.m_uLevel);
+		std::swap(m_pParent, other.m_pParent);
 
 		for (uint i = 0; i < 8; i++) {
 			std::swap(m_pChild[i], other.m_pChild[i]);
@@ -50,7 +53,7 @@ using namespace Simplex;
 
 	}
 
-	Simplex::MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
+	MyOctant::MyOctant(uint a_nMaxLevel, uint a_nIdealEntityCount)
 	{
 		Init();
 		m_uMyOctantCount = 0;
@@ -71,6 +74,7 @@ using namespace Simplex;
 			lMinMax.push_back(pRigidBody->GetMinGlobal());
 			lMinMax.push_back(pRigidBody->GetMaxGlobal());
 		}
+
 		MyRigidBody* pRigidBody = new MyRigidBody(lMinMax);
 
 		vector3 vHalfWidth = pRigidBody->GetHalfWidth();
@@ -89,9 +93,13 @@ using namespace Simplex;
 		m_v3Center = v3Center;
 		m_v3Min = m_v3Center - (vector3(fMax));
 		m_v3Max = m_v3Center + (vector3(fMax));
+	
+		m_uMyOctantCount++;
+
+		ConstructTree(m_uMaxLevel);
 	}
 
-	Simplex::MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
+	MyOctant::MyOctant(vector3 a_v3Center, float a_fSize)
 	{
 		Init();
 		m_v3Center = a_v3Center;
@@ -104,7 +112,7 @@ using namespace Simplex;
 
 	}
 
-	Simplex::MyOctant::MyOctant(MyOctant const& other)
+	MyOctant::MyOctant(MyOctant const& other)
 	{
 		m_uChildren = other.m_uChildren;
 		m_v3Center = other.m_v3Center;
@@ -140,17 +148,17 @@ using namespace Simplex;
 		return *this;
 	}
 
-	Simplex::MyOctant::~MyOctant(void){Release();}
+	MyOctant::~MyOctant(void){Release();}
 
-	float Simplex::MyOctant::GetSize(void) { return m_fSize; }
+	float MyOctant::GetSize(void) { return m_fSize; }
 
-	vector3 Simplex::MyOctant::GetCenterGlobal(void) { return m_v3Center; }
+	vector3 MyOctant::GetCenterGlobal(void) { return m_v3Center; }
 
-	vector3 Simplex::MyOctant::GetMinGlobal(void) { return m_v3Min; }
+	vector3 MyOctant::GetMinGlobal(void) { return m_v3Min; }
 
-	vector3 Simplex::MyOctant::GetMaxGlobal(void) { return m_v3Max; }
+	vector3 MyOctant::GetMaxGlobal(void) { return m_v3Max; }
 
-	bool Simplex::MyOctant::IsColliding(uint a_uRBIndex)
+	bool MyOctant::IsColliding(uint a_uRBIndex)
 	{
 		uint nObjectCount = m_pEntityMngr->GetEntityCount();
 
@@ -172,7 +180,7 @@ using namespace Simplex;
 
 	}
 
-	void Simplex::MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
+	void MyOctant::Display(uint a_nIndex, vector3 a_v3Color)
 	{
 		if (m_uID == a_nIndex)
 		{
@@ -185,7 +193,7 @@ using namespace Simplex;
 		}
 	}
 
-	void Simplex::MyOctant::Display(vector3 a_v3Color)
+	void MyOctant::Display(vector3 a_v3Color)
 	{
 		for (uint nIndex = 0; nIndex < m_uChildren; nIndex++)
 		{
@@ -194,7 +202,7 @@ using namespace Simplex;
 		m_pMeshMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center) * glm::scale(vector3(m_fSize)), a_v3Color, RENDER_WIRE);
 	}
 
-	void Simplex::MyOctant::DisplayLeafs(vector3 a_v3Color)
+	void MyOctant::DisplayLeafs(vector3 a_v3Color)
 	{
 		uint nLeafs = m_lChild.size();
 		for (uint i = 0; i < nLeafs; i++)
@@ -204,7 +212,7 @@ using namespace Simplex;
 		m_pMeshMngr->AddWireCubeToRenderList(glm::translate(IDENTITY_M4, m_v3Center)*glm::scale(vector3(m_fSize)), a_v3Color, RENDER_WIRE);
 	}
 
-	void Simplex::MyOctant::ClearEntityList(void)
+	void MyOctant::ClearEntityList(void)
 	{
 		for (uint i = 0; i < m_uChildren; i++)
 		{
@@ -213,9 +221,13 @@ using namespace Simplex;
 		m_EntityList.clear();
 	}
 
-	void Simplex::MyOctant::Subdivide(void)
+	void MyOctant::Subdivide(void)
 	{
-		if (m_uLevel >= m_uMaxLevel || m_uChildren != 0)
+		if (m_uLevel >= m_uMaxLevel) 
+		{
+			return;
+		}
+		if (m_uChildren != 0)
 		{
 			return;
 		}
@@ -268,7 +280,7 @@ using namespace Simplex;
 
 	}
 
-	MyOctant* Simplex::MyOctant::GetChild(uint a_nChild)
+	MyOctant* MyOctant::GetChild(uint a_nChild)
 	{
 		if (a_nChild > 7)
 		{
@@ -277,11 +289,11 @@ using namespace Simplex;
 		return m_pChild[a_nChild];
 	}
 
-	MyOctant* Simplex::MyOctant::GetParent(void){return m_pParent;}
+	MyOctant* MyOctant::GetParent(void){return m_pParent;}
 
-	bool Simplex::MyOctant::IsLeaf(void){return m_uChildren==0;}
+	bool MyOctant::IsLeaf(void){return m_uChildren==0;}
 
-	bool Simplex::MyOctant::ContainsMoreThan(uint a_nEntities)
+	bool MyOctant::ContainsMoreThan(uint a_nEntities)
 	{
 		uint count = 0;
 		uint ObjCount = m_pEntityMngr->GetEntityCount();
@@ -299,7 +311,7 @@ using namespace Simplex;
 		return false;
 	}
 
-	void Simplex::MyOctant::KillBranches(void)
+	void MyOctant::KillBranches(void)
 	{
 		for (uint i = 0; i < m_uChildren; i++)
 		{
@@ -310,7 +322,7 @@ using namespace Simplex;
 		m_uChildren = 0;
 	}
 
-	void Simplex::MyOctant::ConstructTree(uint a_nMaxLevel)
+	void MyOctant::ConstructTree(uint a_nMaxLevel)
 	{
 		if (m_uLevel != 0)
 		{
@@ -336,7 +348,7 @@ using namespace Simplex;
 		ConstructList();
 	}
 
-	void Simplex::MyOctant::AssignIDtoEntity(void)
+	void MyOctant::AssignIDtoEntity(void)
 	{
 		for (uint i = 0; i < m_uChildren; i++)
 		{
@@ -356,9 +368,9 @@ using namespace Simplex;
 		}
 	}
 
-	uint Simplex::MyOctant::GetMyOctantCount(void) { return m_uMyOctantCount; }
+	uint MyOctant::GetMyOctantCount(void) { return m_uMyOctantCount; }
 
-	void Simplex::MyOctant::Release(void)
+	void MyOctant::Release(void)
 	{
 		if (m_uLevel == 0)
 		{
@@ -370,7 +382,7 @@ using namespace Simplex;
 		m_lChild.clear();
 	}
 
-	void Simplex::MyOctant::ConstructList(void)
+	void MyOctant::ConstructList(void)
 	{
 		for (uint i = 0; i < m_uChildren; i++)
 		{

@@ -1,5 +1,5 @@
-#ifndef __MyOctantCLASS_H_
-#define __MyOctantCLASS_H_
+#ifndef __MYOCTANTCLASS_H_
+#define __MYOCTANTCLASS_H_
 
 #include "MyEntityManager.h"
 
@@ -7,11 +7,11 @@ namespace Simplex
 {
 
 	//System Class
-	class SimplexDLL MyOctant
+	class  MyOctant
 	{
-		uint m_uMyOctantCount; //will store the number of MyOctants instantiated
-		uint m_uMaxLevel;//will store the maximum level an MyOctant can go to
-		uint m_uIdealEntityCount; //will tell how many ideal Entities this object will contain
+		static uint m_uMyOctantCount; //will store the number of MyOctants instantiated
+		static uint m_uMaxLevel;//will store the maximum level an MyOctant can go to
+		static uint m_uIdealEntityCount; //will tell how many ideal Entities this object will contain
 
 		uint m_uID = 0; //Will store the current ID for this MyOctant
 		uint m_uLevel = 0; //Will store the current level of the MyOctant
